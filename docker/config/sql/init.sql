@@ -1,9 +1,4 @@
-DROP DATABASE IF EXISTS mcube_sizing;
-
-CREATE DATABASE mcube_sizing;
-
-USE mcube_sizing;
-
+-- Table Creation
 CREATE TABLE IF NOT EXISTS role (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE
@@ -30,7 +25,7 @@ CREATE TABLE IF NOT EXISTS user (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     role_id INT NOT NULL,
     FOREIGN KEY (role_id) REFERENCES role(id)
 );
@@ -55,6 +50,7 @@ CREATE TABLE IF NOT EXISTS mcube_estimation (
     estimation_name TEXT NOT NULL,
     customer_name TEXT NOT NULL,
     created_by INT NOT NULL,
+    submitted BOOL DEFAULT false,
     created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (created_by) REFERENCES user(user_id)
@@ -111,3 +107,114 @@ CREATE TABLE IF NOT EXISTS deployment_spec (
     FOREIGN KEY (mcube_component_id) REFERENCES mcube_component(id),
     FOREIGN KEY (target_id) REFERENCES deployment_target(id)
 );
+
+-- Table Creation Ends here
+------------------------------------------------------------------------------
+-- Seed Data
+INSERT INTO
+    role (name)
+VALUES
+    ('admin'),
+    ('sales'),
+    ('architect'),
+    ('product'),
+    ('infrastructure'),
+    ('customer'),
+    ('user');
+
+INSERT INTO
+    user (name, email, password, role_id)
+VALUES
+    (
+        'Admin User',
+        'admin@example.com',
+        'password1',
+        (
+            SELECT
+                id
+            FROM
+                role
+            WHERE
+                name = 'admin'
+        )
+    ),
+    (
+        'Sales User',
+        'sales@example.com',
+        'password2',
+        (
+            SELECT
+                id
+            FROM
+                role
+            WHERE
+                name = 'sales'
+        )
+    ),
+    (
+        'Architect User',
+        'architect@example.com',
+        'password3',
+        (
+            SELECT
+                id
+            FROM
+                role
+            WHERE
+                name = 'architect'
+        )
+    ),
+    (
+        'Product User',
+        'product@example.com',
+        'password4',
+        (
+            SELECT
+                id
+            FROM
+                role
+            WHERE
+                name = 'product'
+        )
+    ),
+    (
+        'Infrastructure User',
+        'infrastructure@example.com',
+        'password5',
+        (
+            SELECT
+                id
+            FROM
+                role
+            WHERE
+                name = 'infrastructure'
+        )
+    ),
+    (
+        'Customer User',
+        'customer@example.com',
+        'password6',
+        (
+            SELECT
+                id
+            FROM
+                role
+            WHERE
+                name = 'customer'
+        )
+    ),
+    (
+        'Normal User',
+        'user@example.com',
+        'password7',
+        (
+            SELECT
+                id
+            FROM
+                role
+            WHERE
+                name = 'user'
+        )
+    );
+
+-- Seed Data Ends here

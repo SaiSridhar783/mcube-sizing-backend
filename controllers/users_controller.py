@@ -46,6 +46,11 @@ class UserUpdateResponse(BaseModel):
     role_id: int
 
 
+class UserValidate(BaseModel):
+    email: EmailStr
+    password: str
+
+
 @router.post("/user", response_model=UserCreateResponse)
 def create_user(user: UserCreate):
     try:
@@ -96,6 +101,20 @@ def delete_user(user_id: int = Path(..., gt=0)):
         if not result:
             raise HTTPException(status_code=404, detail="User not found")
         return {"message": "User deleted successfully"}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/user/login", response_model=dict)
+async def login(user: UserValidate):
+    try:
+        try_user = users_service.read("user", conditions=user.model_dump())
+        try_user_ = try_user.fetchone()
+        if try_user_ is None:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        return {"message": "Login successful"}
     except HTTPException as e:
         raise e
     except Exception as e:

@@ -1,6 +1,6 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Path
 from pydantic import BaseModel, EmailStr
-from typing import List, Optional
+from typing import Optional
 from datetime import datetime
 from services.users_service import UsersService
 from connectors import db_conn
@@ -20,6 +20,7 @@ class UserUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[EmailStr] = None
     password: Optional[str] = None
+    role_id: Optional[int] = None
 
 
 class UserCreateResponse(BaseModel):
@@ -27,7 +28,21 @@ class UserCreateResponse(BaseModel):
     name: str
     email: EmailStr
     created_on: datetime
-    updated_at: datetime
+    role_id: int
+
+
+class UserRetrieveResponse(BaseModel):
+    user_id: int
+    name: str
+    email: EmailStr
+    role_name: str
+
+
+class UserUpdateResponse(BaseModel):
+    user_id: int
+    name: str
+    email: EmailStr
+    updated_on: datetime
     role_id: int
 
 
@@ -38,46 +53,50 @@ def create_user(user: UserCreate):
         if not created_user:
             raise HTTPException(
                 status_code=500, detail="Failed to create user")
-
-        return created_user.one()
+        return UserCreateResponse(**created_user.one())
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/user/{user_id}")
-def read_user(user_id: int):
-    conditions = {"user_id": user_id}
+@router.get("/user/{user_id}", response_model=UserRetrieveResponse)
+def read_user(user_id: int = Path(..., gt=0)):
     try:
-        user = users_service.read('user', conditions=conditions)
-        if not user:
+        user = users_service.read_with_role(user_id)
+        user_ = user.fetchone()
+        if user_ is None:
             raise HTTPException(status_code=404, detail="User not found")
-
-        return user.one()
+        return UserRetrieveResponse(**user_)
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.patch("/user/{user_id}", response_model=dict)
+@router.patch("/user/{user_id}", response_model=UserUpdateResponse)
 def update_user(user_id: int, user: UserUpdate):
-    conditions = {"user_id": user_id}
     try:
         updated_user = users_service.update(
-            'user', user.model_dump(exclude_none=True), conditions)
-        if not updated_user:
-            raise HTTPException(
-                status_code=500, detail="User not updated")
-        return updated_user.fetchone()
+            'user', user.model_dump(exclude_unset=True), {"user_id": user_id})
+        updated_user_ = updated_user.fetchone()
+        if updated_user_ is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        return UserUpdateResponse(**updated_user_)
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.delete("/user/{user_id}", response_model=dict)
-def delete_user(user_id: int):
-    conditions = {"user_id": user_id}
+def delete_user(user_id: int = Path(..., gt=0)):
     try:
-        result = users_service.delete('user', conditions=conditions)
+        result = users_service.delete('user', {"user_id": user_id})
         if not result:
-            raise HTTPException(500, "Failed to delete user")
-        return {"message": f"User deleted successfully"}
+            raise HTTPException(status_code=404, detail="User not found")
+        return {"message": "User deleted successfully"}
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

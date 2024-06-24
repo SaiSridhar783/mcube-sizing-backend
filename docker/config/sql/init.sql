@@ -1,3 +1,6 @@
+-- drop database mcube_sizing;
+-- create database mcube_sizing;
+-- use mcube_sizing;
 -- Table Creation
 CREATE TABLE IF NOT EXISTS role (
     id INT AUTO_INCREMENT PRIMARY KEY,

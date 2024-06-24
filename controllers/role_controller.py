@@ -2,30 +2,34 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from datetime import datetime
-from services.users_service import UsersService
+from services.role_service import RolesService
 from connectors import db_conn
 
 role_service = RolesService(db_conn)
 router = APIRouter()
 
+
 class RoleCreate(BaseModel):
-    name : str
+    name: str
+
 
 class RoleReturn(BaseModel):
-    role_id : int
-    name : str
+    role_id: int
+    name: str
 
-@router.post("/role", response_model = RoleReturn)
-def create_role(role : rolecreate):
-    try: 
+
+@router.post("/role", response_model=RoleReturn)
+def create_role(role: rolecreate):
+    try:
         created_role = role_service.create(role.model_dump())
         if not created_role:
-            raise(HTTPException(status_code=500, detail="Failed to create role"))
+            raise (HTTPException(status_code=500, detail="Failed to create role"))
         return created_role.one()
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.get("/roles", response_model = RoleReturn)
+
+@router.get("/roles", response_model=RoleReturn)
 def get_roles():
     try:
         roles = role_services.read_all()
@@ -35,10 +39,11 @@ def get_roles():
         return roles.fetchall()
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-        
+
+
 @router.delete("/role/{role_id}")
-def del_role(role_id : int):
-    conditions = {"role_id" : role_id}
+def del_role(role_id: int):
+    conditions = {"role_id": role_id}
     try:
         del_rol = role_service.delete(conditions=conditions)
         if not result:

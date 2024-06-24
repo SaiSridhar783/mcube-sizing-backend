@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  mariadb:
+    image: "bitnami/mariadb:latest"
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+      - MARIADB_USER=maria
+      - MARIADB_PASSWORD=maria
+      - MARIADB_DATABASE=mcube_sizing
+    restart: always
+    ports:
+      - 3307:3306
+    volumes:
+      - maria_data:/bitnami/mariadb
+      - ./config/sql:/docker-entrypoint-initdb.d
+    networks:
+      - mcube-sizing-net
+
+volumes:
+  maria_data:
+    name: sizing_maria_data
+
+networks:
+  mcube-sizing-net:
+    driver: bridge
+    name: mcube-sizing-net

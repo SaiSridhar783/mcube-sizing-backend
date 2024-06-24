@@ -11,7 +11,7 @@ class McubeEstimationService:
         query = f'INSERT INTO {table} ({keys}) VALUES ({values})'
         self.connector.execute(query, data)
         created_estim = self.read(table, conditions=data)
-        return created_estim[0] if created_estim else None
+        return created_estim
 
     def read(self, table: str, columns='*', conditions: dict = None):
         query = f'SELECT {columns} FROM {table}'
@@ -30,7 +30,7 @@ class McubeEstimationService:
         query = f'UPDATE {table} SET {updates} WHERE {conds}'
         self.connector.execute(query, {**data, **conditions})
         updated_estim = self.read(table, conditions=conditions)
-        return updated_estim[0] if updated_estim else None
+        return updated_estim
 
     def delete(self, table: str, conditions: dict):
         conds = ' AND '.join([f'{k} = :{k}' for k in conditions.keys()])

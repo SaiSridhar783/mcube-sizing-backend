@@ -8,8 +8,9 @@ class McubeEstimationService:
         keys = ', '.join(data.keys())
         values = ', '.join([f":{key}" for key in data.keys()])
         query = f'INSERT INTO {table} ({keys}) VALUES ({values})'
-        created_user = self.connector.execute(query, data)
-        return created_user
+        self.connector.execute(query, data)
+        created_estim = self.read(table, conditions = data)
+        return created_estim
 
     def read(self, table = 'Mcube_Estimation', columns='*', conditions: dict = None):
         query = f'SELECT {columns} FROM {table}'
@@ -26,11 +27,12 @@ class McubeEstimationService:
         updates = ', '.join([f'{k} = :{k}' for k in data.keys()])
         conds = ' AND '.join([f'{k} = :{k}' for k in conditions.keys()])
         query = f'UPDATE Mcube_Estimation SET {updates} WHERE {conds}'
-        updated_user = self.connector.execute(query, {**data, **conditions})
-        return updated_user
+        self.connector.execute(query, {**data, **conditions})
+        updated_estim = self.read(table, conditions=conditions)
+        return updated_estim
 
     def delete(self, * ,table = 'Mcube_Estimation', conditions: dict):
         conds = ' AND '.join([f'{k} = :{k}' for k in conditions.keys()])
         query = f'DELETE FROM {table} WHERE {conds}'
-        deleted_user = self.connector.execute(query, conditions)
-        return deleted_user
+        deleted_estim = self.connector.execute(query, conditions)
+        return deleted_estim

@@ -1,7 +1,7 @@
 from utils.db_connector import DBConnector
 
 
-class RolesService:
+class RoleService:
     def __init__(self, connector: DBConnector):
         self.connector = connector
 
@@ -10,7 +10,9 @@ class RolesService:
         values = ', '.join([f":{key}" for key in data.keys()])
         query = f'INSERT INTO {table} ({keys}) VALUES ({values})'
         self.connector.execute(query, data)
-        created_role = self.read(table, conditions=data)
+        last_inserted_id = self.connector.execute(
+            "SELECT LAST_INSERT_ID() AS id").first()["id"]
+        created_role = self.read(table, conditions={"id": last_inserted_id})
         return created_role
 
     def read_all(self, table: str):
@@ -27,5 +29,4 @@ class RolesService:
     def delete(self, table: str, conditions: dict):
         conds = ' AND '.join([f'{k} = :{k}' for k in conditions.keys()])
         query = f'DELETE FROM {table} WHERE {conds}'
-        deleted_role = self.connector.execute(query, conditions)
-        return deleted_role
+        return self.connector.execute(query, conditions)

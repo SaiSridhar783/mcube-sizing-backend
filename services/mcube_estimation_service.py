@@ -10,7 +10,9 @@ class McubeEstimationService:
         values = ', '.join([f":{key}" for key in data.keys()])
         query = f'INSERT INTO {table} ({keys}) VALUES ({values})'
         self.connector.execute(query, data)
-        created_estim = self.read(table, conditions=data)
+        last_inserted_id = self.connector.execute(
+            "SELECT LAST_INSERT_ID() AS id").first()["id"]
+        created_estim = self.read(table, conditions={"id": last_inserted_id})
         return created_estim
 
     def read(self, table: str, columns='*', conditions: dict = None):

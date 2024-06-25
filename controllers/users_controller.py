@@ -107,14 +107,15 @@ def delete_user(user_id: int = Path(..., gt=0)):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("/user/login", response_model=dict)
+@router.post("/user/login", response_model=UserRetrieveResponse)
 async def login(user: UserValidate):
     try:
         try_user = users_service.read("user", conditions=user.model_dump())
         try_user_ = try_user.fetchone()
         if try_user_ is None:
             raise HTTPException(status_code=401, detail="Invalid credentials")
-        return {"message": "Login successful"}
+        user_details = users_service.read_with_role(try_user_["user_id"])
+        return UserRetrieveResponse(**user_details.one())
     except HTTPException as e:
         raise e
     except Exception as e:

@@ -33,5 +33,6 @@ class DBConnector:
                 session.commit()
                 return result.mappings()
             except Exception as e:
+                session.rollback()
                 logging.error("Could not execute query: " + str(e))
                 raise ValueError(str(e))

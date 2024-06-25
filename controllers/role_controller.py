@@ -14,17 +14,17 @@ class RoleCreate(BaseModel):
 
 
 class RoleReturn(BaseModel):
-    role_id: int
+    id: int
     name: str
 
 
 @router.post("/role", response_model=RoleReturn)
-def create_role(role: rolecreate):
+def create_role(role: RoleCreate):
     try:
-        created_role = role_service.create(role.model_dump())
+        created_role = role_service.create(table = "role",data = role.model_dump())
         if not created_role:
             raise (HTTPException(status_code=500, detail="Failed to create role"))
-        return created_role.one()
+        return RoleReturn(**created_role.one())
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -32,8 +32,8 @@ def create_role(role: rolecreate):
 @router.get("/roles", response_model=RoleReturn)
 def get_roles():
     try:
-        roles = role_services.read_all()
-        if not role:
+        roles = role_service.read_all(table = "role")
+        if not roles:
             raise HTTPException(status_code=404, detail="roles not found")
 
         return roles.fetchall()
@@ -43,10 +43,10 @@ def get_roles():
 
 @router.delete("/role/{role_id}")
 def del_role(role_id: int):
-    conditions = {"role_id": role_id}
+    conditions = {"id": role_id}
     try:
-        del_rol = role_service.delete(conditions=conditions)
-        if not result:
+        del_rol = role_service.delete(table = "role" ,conditions=conditions)
+        if not del_rol:
             raise HTTPException(500, "Failed to delete user")
         return {"message": f"Role deleted successfully"}
     except Exception as e:

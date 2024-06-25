@@ -5,18 +5,15 @@ class McubeComponent:
     def __init__(self, connector: DBConnector):
         self.connector = connector
 
-    def get_id(self) -> int:
-        return max(self.users.keys(), default=0)
-
-    def create(self, * ,table = 'mcube_component', data: dict):
+    def create(self,table : str, data: dict):
         keys = ', '.join(data.keys())
         values = ', '.join([f":{key}" for key in data.keys()])
         query = f'INSERT INTO {table} ({keys}) VALUES ({values})'
-        created_sizing = self.connector.execute(query, data)
-        #created_sizing['id'] = self.get_id() + 1
-        return created_sizing
+        self.connector.execute(query, data)
+        creared_component = self.read(table, conditions = data)
+        return created_component
 
-    def read(self, table = 'mcube_component', columns='*', conditions: dict = None):
+    def read(self, table : str, columns='*', conditions: dict = None):
         query = f'SELECT {columns} FROM {table}'
         params = {}
         if conditions:
@@ -27,15 +24,16 @@ class McubeComponent:
     def read_all(self, table = 'mcube_component'):
         return self.read(table)
 
-    def update(self, *,table = 'mcube_component', data: dict, conditions: dict):
+    def update(self,table : str, data: dict, conditions: dict):
         updates = ', '.join([f'{k} = :{k}' for k in data.keys()])
         conds = ' AND '.join([f'{k} = :{k}' for k in conditions.keys()])
         query = f'UPDATE {table} SET {updates} WHERE {conds}'
-        updated_sizing = self.connector.execute(query, {**data, **conditions})
-        return updated_sizing
+        self.connector.execute(query, {**data, **conditions})
+        updated_component = self.read(table, conditions=conditions)
+        return updated_component
 
     def delete(self, *,table = 'mcube_component', conditions: dict):
         conds = ' AND '.join([f'{k} = :{k}' for k in conditions.keys()])
         query = f'DELETE FROM {table} WHERE {conds}'
-        deleted_sizing = self.connector.execute(query, conditions)
-        return deleted_sizing
+        return self.connector.execute(query, conditions)
+         

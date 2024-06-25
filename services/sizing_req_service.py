@@ -5,19 +5,19 @@ class SizingRequirement:
     def __init__(self, connector: DBConnector):
         self.connector = connector
 
-    def create(self, *, table='sizing_requirements', data: dict, condition_key : str, condition_value):
+    def create(self, *, table : str, data: dict, condition_value : int):
     
+        data["estimation_id"] = condition_value
         keys = ', '.join(data.keys())
         values = ', '.join([f":{key}" for key in data.keys()])
-        data[condition_key] = condition_value
         query = f'INSERT INTO {table} ({keys}) VALUES ({values})'
-    
+
         self.connector.execute(query, data)
 
-        created_sizing = self.read(table, conditions = data)
+        created_sizing = self.read(table, conditions=data)
         return created_sizing
 
-    def read(self, table = 'sizing_requirements', columns='*', conditions: dict = None):
+    def read(self, table : str, columns='*', conditions: dict = None):
         query = f'SELECT {columns} FROM {table}'
         params = {}
         if conditions:
@@ -25,10 +25,10 @@ class SizingRequirement:
             params = conditions
         return self.connector.execute(query, params)
 
-    def read_all(self, table = 'sizing_requirements'):
+    def read_all(self, table : str):
         return self.read(table)
 
-    def update(self, *,table = 'sizing_requirements', data: dict, conditions: dict):
+    def update(self, *,table : str, data: dict, conditions: dict):
         updates = ', '.join([f'{k} = :{k}' for k in data.keys()])
         conds = ' AND '.join([f'{k} = :{k}' for k in conditions.keys()])
         query = f'UPDATE {table} SET {updates} WHERE {conds}'
@@ -36,7 +36,7 @@ class SizingRequirement:
         updated_sizing = self.read(table, conditions=data)
         return updated_sizing
 
-    def delete(self, *,table = 'sizing_requirements', conditions: dict):
+    def delete(self, *,table : str, conditions: dict):
         conds = ' AND '.join([f'{k} = :{k}' for k in conditions.keys()])
         query = f'DELETE FROM {table} WHERE {conds}'
         deleted_sizing = self.connector.execute(query, conditions)

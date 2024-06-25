@@ -29,7 +29,7 @@ def create_role(role: RoleCreate):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/roles", response_model=RoleReturn)
+@router.get("/roles", response_model=List[RoleReturn])
 def get_roles():
     try:
         roles = role_service.read_all(table = "role")

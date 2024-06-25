@@ -18,6 +18,7 @@ class SizingCreate(BaseModel):
     ai_ml_model : int
     high_availability : bool
     deployment_type : int
+    location : str
     provided_by : int
 
 class SizingUpdate(BaseModel):
@@ -30,6 +31,7 @@ class SizingUpdate(BaseModel):
     ai_ml_model : Optional[int] = None
     high_availability : Optional[bool] = None
     deployment_type : Optional[int] = None
+    location : Optional[str] = None
     provided_by : Optional[int] = None
 
 class SizingResponse(BaseModel):
@@ -43,19 +45,22 @@ class SizingResponse(BaseModel):
     ai_ml_model : int
     high_availability : bool
     deployment_type : int
+    location : str
     provided_by : int
 
 class SizingResponse2(BaseModel):
     data_vol : int
-    TPS_QPS : int
-    conc_users : int
-    ret_period : int
-    max_job : int #count
-    max_report : int #count
-    ai_ml : int
+    tps_qps : int
+    concurrent_users : int
+    data_retention_period : int
+    max_job_count : int #count
+    max_report_count : int #count
+    ai_ml_model : int
     high_availability : bool
-    deploy_type : int
+    deployment_type : int
+    location : str
     provided_by : int
+
 
 @router.get("/requirements/{estimation_id}", response_model=List[SizingResponse])
 def read_sizing(estimation_id: int):

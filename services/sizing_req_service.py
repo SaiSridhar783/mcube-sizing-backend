@@ -13,8 +13,9 @@ class SizingRequirement:
         query = f'INSERT INTO {table} ({keys}) VALUES ({values})'
 
         self.connector.execute(query, data)
-
-        created_sizing = self.read(table, conditions=data)
+        last_inserted_id = self.connector.execute(
+            "SELECT LAST_INSERT_ID() AS id").first()["id"]
+        created_sizing = self.read(table, conditions={"id" : last_inserted_id})
         return created_sizing
 
     def read(self, table : str, columns='*', conditions: dict = None):

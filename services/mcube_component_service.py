@@ -1,7 +1,7 @@
 from utils.db_connector import DBConnector
 
 
-class McubeComponent:
+class McubeComponentService:
     def __init__(self, connector: DBConnector):
         self.connector = connector
 
@@ -10,7 +10,8 @@ class McubeComponent:
         values = ', '.join([f":{key}" for key in data.keys()])
         query = f'INSERT INTO {table} ({keys}) VALUES ({values})'
         self.connector.execute(query, data)
-        creared_component = self.read(table, conditions=data)
+        created_component = self.read(
+            table, conditions={"id": data['id'], "mcube_ver": data['mcube_ver']})
         return created_component
 
     def read(self, table: str, columns='*', conditions: dict = None):
@@ -32,7 +33,7 @@ class McubeComponent:
         updated_component = self.read(table, conditions=conditions)
         return updated_component
 
-    def delete(self, *, table='mcube_component', conditions: dict):
+    def delete(self, table: str, conditions: dict):
         conds = ' AND '.join([f'{k} = :{k}' for k in conditions.keys()])
         query = f'DELETE FROM {table} WHERE {conds}'
         return self.connector.execute(query, conditions)

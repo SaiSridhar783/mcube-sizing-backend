@@ -3,7 +3,7 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime
 from services.users_service import UsersService
-from connectors import db_conn
+from utils.connectors import db_conn
 
 users_service = UsersService(db_conn)
 router = APIRouter()

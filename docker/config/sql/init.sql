@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS mcube_estimation (
 
 CREATE TABLE IF NOT EXISTS sizing_requirement (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    estimation_id INT NOT NULL,
+    estimation_id INT NOT NULL UNIQUE,
     data_vol INT NOT NULL,
     tps_qps INT NOT NULL,
     concurrent_users INT NOT NULL,
@@ -80,16 +80,17 @@ CREATE TABLE IF NOT EXISTS sizing_requirement (
 
 CREATE TABLE IF NOT EXISTS selected_component (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    estimation_id INT,
+    estimation_id INT NOT NULL UNIQUE,
     size_slab_id INT,
     provided_by INT,
     FOREIGN KEY (size_slab_id) REFERENCES mcube_component_size_slab(id),
-    FOREIGN KEY (provided_by) REFERENCES user(user_id)
+    FOREIGN KEY (provided_by) REFERENCES user(user_id),
+    FOREIGN KEY (estimation_id) REFERENCES mcube_estimation(id)
 );
 
 CREATE TABLE IF NOT EXISTS deployment_spec (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    estimation_id INT,
+    estimation_id INT NOT NULL UNIQUE,
     node_id INT,
     node_name TEXT,
     mcube_component_id INT,
@@ -112,7 +113,7 @@ CREATE TABLE IF NOT EXISTS deployment_spec (
 );
 
 -- Table Creation Ends here
-------------------------------------------------------------------------------
+--
 -- Seed Data
 INSERT INTO
     role (name)
@@ -219,5 +220,13 @@ VALUES
                 name = 'user'
         )
     );
+
+INSERT INTO
+    deployment_target (target_name, target_type)
+VALUES
+    ('AWS', 'Cloud'),
+    ('Azure', 'Cloud'),
+    ('GCP', 'Cloud'),
+    ('On-Prem', 'Hybrid');
 
 -- Seed Data Ends here

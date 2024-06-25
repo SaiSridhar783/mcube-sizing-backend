@@ -3,7 +3,7 @@ from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel
 from services.mcube_estimation_service import McubeEstimationService
-from connectors import db_conn
+from utils.connectors import db_conn
 
 mcube_estimation_service = McubeEstimationService(db_conn)
 router = APIRouter()

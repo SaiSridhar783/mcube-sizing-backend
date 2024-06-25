@@ -1,10 +1,11 @@
-from db_connector import DBConnector
+from utils.db_connector import DBConnector
+
 
 class RolesService:
     def __init__(self, connector: DBConnector):
         self.connector = connector
-    
-    def create(self, table: str, data : dict):
+
+    def create(self, table: str, data: dict):
         keys = ', '.join(data.keys())
         values = ', '.join([f":{key}" for key in data.keys()])
         query = f'INSERT INTO {table} ({keys}) VALUES ({values})'

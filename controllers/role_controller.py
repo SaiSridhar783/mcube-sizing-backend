@@ -3,7 +3,7 @@ from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from datetime import datetime
 from services.role_service import RolesService
-from connectors import db_conn
+from utils.connectors import db_conn
 
 role_service = RolesService(db_conn)
 router = APIRouter()
@@ -21,7 +21,8 @@ class RoleReturn(BaseModel):
 @router.post("/role", response_model=RoleReturn)
 def create_role(role: RoleCreate):
     try:
-        created_role = role_service.create(table = "role",data = role.model_dump())
+        created_role = role_service.create(
+            table="role", data=role.model_dump())
         if not created_role:
             raise (HTTPException(status_code=500, detail="Failed to create role"))
         return RoleReturn(**created_role.one())
@@ -32,7 +33,7 @@ def create_role(role: RoleCreate):
 @router.get("/roles", response_model=List[RoleReturn])
 def get_roles():
     try:
-        roles = role_service.read_all(table = "role")
+        roles = role_service.read_all(table="role")
         if not roles:
             raise HTTPException(status_code=404, detail="roles not found")
 
@@ -45,7 +46,7 @@ def get_roles():
 def del_role(role_id: int):
     conditions = {"id": role_id}
     try:
-        del_rol = role_service.delete(table = "role" ,conditions=conditions)
+        del_rol = role_service.delete(table="role", conditions=conditions)
         if not del_rol:
             raise HTTPException(500, "Failed to delete user")
         return {"message": f"Role deleted successfully"}

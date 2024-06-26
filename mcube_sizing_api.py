@@ -20,4 +20,5 @@ app.include_router(sizing_req_controller.router,
 app.include_router(mcube_component_controller.router,
                    prefix="/component", tags=["Mcube Components"])
 app.include_router(role_controller.router, prefix="/role", tags=["Roles"])
-app.include_router(deployment_target_controller.router, prefix="/deployment_target", tags=["deployment_target"])
+app.include_router(deployment_target_controller.router,
+                   prefix="/deployment_target", tags=["Deployment Targets"])

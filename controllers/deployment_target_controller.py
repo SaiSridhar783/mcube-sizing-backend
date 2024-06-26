@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List
-from services.role_service import RoleService
+from services.deployment_target_service import DeploymentTargetService
 from utils.connectors import db_conn
 
 target_service = DeploymentTargetService(db_conn)
@@ -20,10 +20,11 @@ class TargetReturn(BaseModel):
 
 
 @router.post("/deployment_target", response_model=TargetReturn)
-def create_target(role: TargetCreate):
+def create_target(data: TargetCreate):
     try:
-        created_target = target_service.create(table= "deployment_target", data = TargetCreate)
-        if not created_role:
+        created_target = target_service.create(
+            table="deployment_target", data=data.model_dump())
+        if not created_target:
             raise HTTPException(
                 status_code=500, detail="Failed to create deployment_target")
         return TargetReturn(**created_target.one())
@@ -34,18 +35,19 @@ def create_target(role: TargetCreate):
 
 
 @router.get("/deployment_targets", response_model=List[TargetReturn])
-def get_roles():
+def get_targets():
     try:
-        targets = target_service.read_all(table = "deployment_target")
+        targets = target_service.read_all(table="deployment_target")
         return [TargetReturn(**target) for target in targets.fetchall()]
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.delete("/deployment_target/{id}", response_model=dict)
-def delete_role(id: int):
+def delete_target(id: int):
     try:
-        result = target_service.delete(table = "deployment_target", conditions = {"id": id})
+        result = target_service.delete(
+            table="deployment_target", conditions={"id": id})
         if not result:
             raise HTTPException(status_code=404, detail="target not found")
         return {"message": "Deployment Target deleted successfully"}

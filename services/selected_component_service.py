@@ -1,0 +1,31 @@
+from utils.db_connector import DBConnector
+
+class ComponentService:
+    def __init__(self, connector: DBConnector):
+        self.connector = connector
+
+    def create(self, table : str, data : dict):
+        keys = ', '.join(data.keys())
+        values = ', '.join([f":{key}" for key in data.keys()])
+        query = f'INSERT INTO {table} ({keys}) VALUES ({values})'
+        self.connector.execute(query, data)
+        created= self.read(table, conditions)
+        return created
+
+    def read(self, table : str, conditions : dict = None):
+        query = f'SELECT {columns} FROM {table}'
+        params = {}
+        if conditions:
+            query += f' WHERE {" AND ".join([f"{k} = :{k}" for k in conditions.keys()])}'
+            params = conditions
+        return self.connector.execute(query, params)
+
+    def update(self, table : str, data : dict, conditions : dict = None):
+        updates = ', '.join([f'{k} = :{k}' for k in data.keys()])
+        changes = 'AND '.join([f'{k} =: {k}' for k in conditions.keys()])
+        query = f'UPDATE {table} SET {updates} where {changes}'
+        self.connector.execute(query, {**data, **conditions})
+        updated = self.read(table, conditions)
+        return updated
+        
+    

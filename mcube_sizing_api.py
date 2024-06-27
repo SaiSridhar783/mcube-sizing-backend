@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from controllers import users_controller, mcube_estimation_controller, sizing_req_controller, role_controller, mcube_component_controller, deployment_target_controller
+from controllers import users_controller, mcube_estimation_controller, sizing_req_controller, role_controller, mcube_component_controller, deployment_target_controller,selected_component_controller
+
 
 app = FastAPI()
 app.add_middleware(
@@ -22,3 +23,4 @@ app.include_router(mcube_component_controller.router,
 app.include_router(role_controller.router, prefix="/role", tags=["Roles"])
 app.include_router(deployment_target_controller.router,
                    prefix="/deployment_target", tags=["Deployment Targets"])
+app.include_router(selected_component_controller.router, prefix = "/selected-components", tags = ["Selected Components"])

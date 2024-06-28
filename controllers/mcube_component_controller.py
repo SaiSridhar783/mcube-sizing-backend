@@ -26,7 +26,7 @@ class McubeComponentUpdate(BaseModel):
     component_category: Optional[str] = None
 
 
-@router.post("/mcube_component", response_model=McubeComponentCreate)
+@router.post("/", response_model=McubeComponentCreate)
 def create_mcube_component(component: McubeComponentCreate):
     try:
         created_component = mcube_component_service.create(
@@ -36,7 +36,7 @@ def create_mcube_component(component: McubeComponentCreate):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/mcube_component/{id}/{mcube_ver}", response_model=McubeComponentCreate)
+@router.get("/{id}/{mcube_ver}", response_model=McubeComponentCreate)
 def read_mcube_component(
     id: int = Path(..., description="Id of the mcube_component", gt=0),
     mcube_ver: str = Path(..., description="Version of the mcube_component")
@@ -55,7 +55,7 @@ def read_mcube_component(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.patch("/mcube_component/{id}/{mcube_ver}", response_model=McubeComponentCreate)
+@router.patch("/{id}/{mcube_ver}", response_model=McubeComponentCreate)
 def update_mcube_component(
     id: int,
     mcube_ver: str,
@@ -78,7 +78,7 @@ def update_mcube_component(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.delete("/mcube_component/{id}/{mcube_ver}", response_model=dict)
+@router.delete("/{id}/{mcube_ver}", response_model=dict)
 def delete_mcube_component(id: int, mcube_ver: str):
     conditions = {"id": id, "mcube_ver": mcube_ver}
     try:
@@ -88,6 +88,21 @@ def delete_mcube_component(id: int, mcube_ver: str):
             raise HTTPException(
                 status_code=404, detail="mcube_component not found")
         return {"message": "mcube_component deleted successfully"}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/{category}", response_model=list[McubeComponentCreate])
+def get_components_by_category(category: str):
+    try:
+        mcube_components = mcube_component_service.read(
+            table="mcube_component", conditions={"component_category": category})
+        if not mcube_components:
+            raise HTTPException(
+                status_code=404, detail="mcube_component not found")
+        return [McubeComponentCreate(**mcube_component) for mcube_component in mcube_components.all()]
     except HTTPException as e:
         raise e
     except Exception as e:

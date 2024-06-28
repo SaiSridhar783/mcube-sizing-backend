@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List
-from services.deployment_option_service import DeploymentTargetService
+from services.deployment_option_service import DeploymentOptionService
 from utils.connectors import db_conn
 
 target_service = DeploymentOptionService(db_conn)

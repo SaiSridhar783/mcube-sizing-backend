@@ -9,7 +9,7 @@ router = APIRouter()
 
 class slabbody(BaseModel):
     component_id: int
-    price_model_name: Literal["basic" | "standard" | "premium"]
+    price_model_name: str
     storage_range: str
     storage_gb: int
     cpu_range: str
@@ -22,7 +22,7 @@ class slabbody(BaseModel):
 class slabReturn(BaseModel):
     id : int
     component_id: int
-    price_model_name: Literal["basic" | "standard" | "premium"]
+    price_model_name: str
     storage_range: str
     storage_gb: int
     cpu_range: str
@@ -36,7 +36,7 @@ class slabReturn(BaseModel):
 def slab_add(data : slabbody):
     try: 
         new_slab = slab_service.SlabAdd(table = "mcube_component_size_slab", data = data.model_dump())
-        if not new_sab:
+        if not new_slab:
             raise HTTPException(status_code=400, detail = "failed to create a component size slab")
         return slabReturn(**new_slab.one())
     except Exception as e:
@@ -55,8 +55,8 @@ def get_slab(id : int):
 @router.patch("/{id}", response_model = slabReturn)
 def patch_slab(id : int, data : slabbody):
     try:
-        upated_slab = slab_service.SlabUpdate(table="mcube_component_size_slab", conditions = {"id" : id}, data = data.mode_dump())
-        if not patch_slab:
+        updated_slab = slab_service.SlabUpdate(table="mcube_component_size_slab", conditions = {"id" : id}, data = data.model_dump())
+        if not updated_slab:
             raise HTTPException(status_code=400, detail="failed to update")
         return slabReturn(**updated_slab.one())
     except Exception as e:
@@ -74,7 +74,7 @@ def del_slab(id : int):
         raise HTTPException(status_code=440, detail=str(e))
 
 @router.get("/{component_id}/{price_model_name}", response_model = List[slabReturn])
-def get_slab_byestimation(component_id : int, price_model_name : Literal["basic" | "standard" | "premium"]):
+def get_slab_byestimation(component_id : int, price_model_name : str):
     try:
         read_slab = slab_service.ReadSlab(table="mcube_component_size_slab", conditions = {"component_id" : component_id, "price_model_name" : price_model_name})
         if not read_slab:

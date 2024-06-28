@@ -24,4 +24,4 @@ app.include_router(role_controller.router, prefix="/role", tags=["Roles"])
 app.include_router(deployment_option_controller.router,
                    prefix="/deployment_option", tags=["Deployment Options"])
 app.include_router(selected_component_controller.router, prefix = "/selected-components", tags = ["Selected Components"])
-app.include_router(component_size_slab_service.router, prefix = "/mcube_component_size_slab", tags = ["component_size_slabs"])
+app.include_router(component_size_slab_controller.router, prefix = "/mcube_component_size_slab", tags = ["component_size_slabs"])

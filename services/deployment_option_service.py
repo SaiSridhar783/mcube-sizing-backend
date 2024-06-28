@@ -1,7 +1,7 @@
 from utils.db_connector import DBConnector
 
 
-class DeploymentTargetService:
+class DeploymentOptionService:
     def __init__(self, connector: DBConnector):
         self.connector = connector
 

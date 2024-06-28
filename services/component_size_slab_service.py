@@ -14,5 +14,26 @@ class SizeSlabService:
         return added_slab
 
     def ReadSlab(self, table:str, columns = '*', conditions : dict = None):
-        keys = ', '.join(conditions.keys())
-        query = ', '.join()
+        query = f'SELECT {columns} FROM {table}'
+        params = {}
+        if conditions:
+            query += f' WHERE {" AND ".join([f"{k} = :{k}" for k in conditions.keys()])}'
+            params = conditions
+        rd = self.connector.execute(query, params)
+        return rd
+
+    def read_all(self, table: str):
+        return self.read(table)
+
+    def SlabUpdate(self, table : str, data : dict, conditions : dict = None):
+        updates = ', '.join([f'{k} = :{k}' for k in data.keys()])
+        changes = 'AND '.join([f'{k} = :{k}' for k in conditions.keys()])
+        query = f'UPDATE {table} SET {updates} WHERE {changes}'
+        self.connector.execute(query, {**data, **conditions})
+        updated = self.read(table, conditions = conditions)
+        return updated
+
+    def Slabdelete(slef, table : str, conditions : dict):
+        conds = ', '.join([f'{k} = :{k}' for k in conditions.keys()])
+        deleted = f"DELETE FROM {table} WHERE {conds}"
+        return self.connector.execute(query, conds)

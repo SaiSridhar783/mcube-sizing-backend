@@ -11,11 +11,11 @@ class slabbody(BaseModel):
     component_id: int
     price_model_name: Literal["basic" | "standard" | "premium"]
     storage_range: str
-    storage: int
+    storage_gb: int
     cpu_range: str
-    cpu: int
+    cpu_cores: int
     memory_range: str
-    memory: int
+    memory_gb: int
     node_range: str
     node_count: int
 
@@ -24,11 +24,11 @@ class slabReturn(BaseModel):
     component_id: int
     price_model_name: Literal["basic" | "standard" | "premium"]
     storage_range: str
-    storage: int
+    storage_gb: int
     cpu_range: str
-    cpu: int
+    cpu_cores: int
     memory_range: str
-    memory: int
+    memory_gb: int
     node_range: str
     node_count: int
 

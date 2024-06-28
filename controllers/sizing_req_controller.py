@@ -9,10 +9,10 @@ router = APIRouter()
 
 
 class SizingRequirementCreate(BaseModel):
-    data_vol: int
+    data_vol_gb: int
     tps_qps: int
     concurrent_users: int
-    data_retention_period: int
+    data_retention_period_months: int
     max_job_count: int
     max_report_count: int
     ai_ml_model: int
@@ -23,10 +23,10 @@ class SizingRequirementCreate(BaseModel):
 
 
 class SizingRequirementUpdate(BaseModel):
-    data_vol: Optional[int] = None
+    data_vol_gb: Optional[int] = None
     tps_qps: Optional[int] = None
     concurrent_users: Optional[int] = None
-    data_retention_period: Optional[int] = None
+    data_retention_period_months: Optional[int] = None
     max_job_count: Optional[int] = None
     max_report_count: Optional[int] = None
     ai_ml_model: Optional[int] = None
@@ -39,10 +39,10 @@ class SizingRequirementUpdate(BaseModel):
 class SizingRequirementResponse(BaseModel):
     id: int
     estimation_id: int
-    data_vol: int
+    data_vol_gb: int
     tps_qps: int
     concurrent_users: int
-    data_retention_period: int
+    data_retention_period_months: int
     max_job_count: int
     max_report_count: int
     ai_ml_model: int

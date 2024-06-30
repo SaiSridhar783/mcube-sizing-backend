@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Path
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from services.mcube_component_service import McubeComponentService
 from utils.connectors import db_conn
@@ -94,7 +94,7 @@ def delete_mcube_component(id: int, mcube_ver: str):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/{category}", response_model=list[McubeComponentCreate])
+@router.get("/{category}", response_model=List[McubeComponentCreate])
 def get_components_by_category(category: str):
     try:
         mcube_components = mcube_component_service.read(

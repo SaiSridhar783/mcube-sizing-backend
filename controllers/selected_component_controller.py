@@ -13,6 +13,7 @@ class SelectedComponentResponse(BaseModel):
     estimation_id: int
     size_slab_id: int
     provided_by: int
+    component_name: Optional[str] = None
 
 
 class SelectedComponentUpdate(BaseModel):
@@ -31,7 +32,7 @@ class SelectedComponentCreate(BaseModel):
 def get_selected_components(estimation_id: int):
     conditions = {"estimation_id": estimation_id}
     try:
-        selected_components = selected_component_service.read(
+        selected_components = selected_component_service.read_with_component_name(
             table="selected_component", conditions=conditions)
         if not selected_components:
             raise HTTPException(

@@ -24,6 +24,24 @@ class SelectedComponentService:
         rd = self.connector.execute(query, params)
         return rd
 
+    def read_with_component_name(self, table: str, columns='*', conditions: dict = None):
+        query = '''
+        SELECT sc.*, mc.component_name
+        FROM selected_component sc
+        JOIN mcube_component_size_slab mcss ON sc.size_slab_id = mcss.id
+        JOIN mcube_component mc ON mcss.component_id = mc.id
+        '''
+
+        params = {}
+        if conditions:
+            where_clause = " AND ".join(
+                [f"{k} = :{k}" for k in conditions.keys()])
+            query += f' WHERE {where_clause}'
+            params = conditions
+
+        rd = self.connector.execute(query, params)
+        return rd
+
     def read_all(self, table: str):
         return self.read(table)
 

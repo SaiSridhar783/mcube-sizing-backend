@@ -18,7 +18,7 @@ class SizingRequirementCreate(BaseModel):
     ai_ml_model: int
     high_availability: bool
     deployment_type: int
-    location: str
+    deployment_region: int
     provided_by: int
 
 
@@ -32,7 +32,7 @@ class SizingRequirementUpdate(BaseModel):
     ai_ml_model: Optional[int] = None
     high_availability: Optional[bool] = None
     deployment_type: Optional[int] = None
-    location: Optional[str] = None
+    deployment_region: Optional[int] = None
     provided_by: Optional[int] = None
 
 
@@ -48,7 +48,7 @@ class SizingRequirementResponse(BaseModel):
     ai_ml_model: int
     high_availability: bool
     deployment_type: int
-    location: str
+    deployment_region: int
     provided_by: int
 
 

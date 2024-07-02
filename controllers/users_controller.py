@@ -54,7 +54,7 @@ class UserValidate(BaseModel):
 @router.post("/user", response_model=UserCreateResponse)
 def create_user(user: UserCreate):
     try:
-        created_user = users_service.create('user', user.model_dump())
+        created_user = users_service.create(user.model_dump())
         if not created_user:
             raise HTTPException(
                 status_code=500, detail="Failed to create user")
@@ -83,7 +83,7 @@ def read_user(user_id: int = Path(..., gt=0)):
 def update_user(user_id: int, user: UserUpdate):
     try:
         updated_user = users_service.update(
-            'user', user.model_dump(exclude_unset=True), {"user_id": user_id})
+            user.model_dump(exclude_unset=True), {"user_id": user_id})
         updated_user_ = updated_user.fetchone()
         if updated_user_ is None:
             raise HTTPException(status_code=404, detail="User not found")
@@ -97,7 +97,7 @@ def update_user(user_id: int, user: UserUpdate):
 @router.delete("/user/{user_id}", response_model=dict)
 def delete_user(user_id: int = Path(..., gt=0)):
     try:
-        result = users_service.delete('user', {"user_id": user_id})
+        result = users_service.delete({"user_id": user_id})
         if not result:
             raise HTTPException(status_code=404, detail="User not found")
         return {"message": "User deleted successfully"}
@@ -110,7 +110,7 @@ def delete_user(user_id: int = Path(..., gt=0)):
 @router.post("/user/login", response_model=UserRetrieveResponse)
 async def login(user: UserValidate):
     try:
-        try_user = users_service.read("user", conditions=user.model_dump())
+        try_user = users_service.read(conditions=user.model_dump())
         try_user_ = try_user.fetchone()
         if try_user_ is None:
             raise HTTPException(status_code=401, detail="Invalid credentials")

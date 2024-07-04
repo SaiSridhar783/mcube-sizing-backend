@@ -30,7 +30,7 @@ class McubeComponentUpdate(BaseModel):
 def create_mcube_component(component: McubeComponentCreate):
     try:
         created_component = mcube_component_service.create(
-            "mcube_component", data=component.model_dump())
+            data=component.model_dump())
         return McubeComponentCreate(**created_component.one())
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -44,7 +44,7 @@ def read_mcube_component(
     conditions = {"id": id, "mcube_ver": mcube_ver}
     try:
         mcube_component = mcube_component_service.read(
-            table="mcube_component", conditions=conditions)
+            conditions=conditions)
         if not mcube_component:
             raise HTTPException(
                 status_code=404, detail="mcube_component not found")
@@ -64,7 +64,6 @@ def update_mcube_component(
     conditions = {"id": id, "mcube_ver": mcube_ver}
     try:
         updated_component = mcube_component_service.update(
-            table="mcube_component",
             conditions=conditions,
             data=component.model_dump(exclude_unset=True)
         )
@@ -83,7 +82,7 @@ def delete_mcube_component(id: int, mcube_ver: str):
     conditions = {"id": id, "mcube_ver": mcube_ver}
     try:
         result = mcube_component_service.delete(
-            table="mcube_component", conditions=conditions)
+            conditions=conditions)
         if not result:
             raise HTTPException(
                 status_code=404, detail="mcube_component not found")
@@ -98,7 +97,7 @@ def delete_mcube_component(id: int, mcube_ver: str):
 def get_components_by_category(category: str):
     try:
         mcube_components = mcube_component_service.read(
-            table="mcube_component", conditions={"component_category": category})
+            conditions={"component_category": category})
         if not mcube_components:
             raise HTTPException(
                 status_code=404, detail="mcube_component not found")

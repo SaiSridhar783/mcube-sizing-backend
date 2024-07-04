@@ -57,7 +57,7 @@ def get_sizing_requirements(estimation_id: int):
     conditions = {"estimation_id": estimation_id}
     try:
         sizing_params = sizing_req_service.read(
-            table="sizing_requirement", conditions=conditions)
+            conditions=conditions)
         sizing_params_ = sizing_params.fetchone()
         if sizing_params_ is None:
             raise HTTPException(
@@ -73,8 +73,7 @@ def get_sizing_requirements(estimation_id: int):
 def update_sizing_requirement(estimation_id: int, sizing: SizingRequirementUpdate):
     conditions = {"estimation_id": estimation_id}
     try:
-        updated_sizing = sizing_req_service.update(
-            table="sizing_requirement", data=sizing.model_dump(exclude_none=True), conditions=conditions)
+        updated_sizing = sizing_req_service.update(data=sizing.model_dump(exclude_none=True), conditions=conditions)
         updated_sizing_ = updated_sizing.fetchone()
         if updated_sizing_ is None:
             raise HTTPException(
@@ -91,7 +90,7 @@ def delete_sizing_requirement(sizing_id: int):
     conditions = {"id": sizing_id}
     try:
         result = sizing_req_service.delete(
-            table="sizing_requirement", conditions=conditions)
+            conditions=conditions)
         if not result:
             raise HTTPException(404, "Sizing requirement not found")
         return {"message": f"Sizing requirement deleted successfully"}
@@ -103,7 +102,7 @@ def delete_sizing_requirement(sizing_id: int):
 def create_sizing_requirement(sizing: SizingRequirementCreate, estimation_id: int):
     try:
         created_sizing = sizing_req_service.create(
-            table="sizing_requirement", data=sizing.model_dump(), condition_value=estimation_id)
+            data=sizing.model_dump(), condition_value=estimation_id)
         created_sizing_ = created_sizing.fetchone()
         if created_sizing_ is None:
             raise HTTPException(500, "Failed to create sizing requirement")

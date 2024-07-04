@@ -20,7 +20,7 @@ class RoleReturn(BaseModel):
 @router.post("/role", response_model=RoleReturn)
 def create_role(role: RoleCreate):
     try:
-        created_role = role_service.create("role", role.model_dump())
+        created_role = role_service.create(role.model_dump())
         if not created_role:
             raise HTTPException(
                 status_code=500, detail="Failed to create role")
@@ -34,7 +34,7 @@ def create_role(role: RoleCreate):
 @router.get("/roles", response_model=List[RoleReturn])
 def get_roles():
     try:
-        roles = role_service.read_all("role")
+        roles = role_service.read_all()
         return [RoleReturn(**role) for role in roles.fetchall()]
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -43,7 +43,7 @@ def get_roles():
 @router.delete("/role/{id}", response_model=dict)
 def delete_role(id: int):
     try:
-        result = role_service.delete("role", {"id": id})
+        result = role_service.delete(conditions={"id": id})
         if not result:
             raise HTTPException(status_code=404, detail="Role not found")
         return {"message": "Role deleted successfully"}

@@ -42,7 +42,7 @@ class EstimationResponseWithUpdateTime(EstimationResponseWithTime):
 def get_estimations_by_user(user_id: int = Path(..., gt=0)):
     try:
         estimations = mcube_estimation_service.read(
-            'mcube_estimation', conditions={"created_by": user_id})
+            conditions={"created_by": user_id})
         return [EstimationResponse(**estimation) for estimation in estimations.all()]
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -52,7 +52,7 @@ def get_estimations_by_user(user_id: int = Path(..., gt=0)):
 def create_estimation(estimation: EstimationCreate):
     try:
         created_estimation = mcube_estimation_service.create(
-            'mcube_estimation', estimation.model_dump())
+            estimation.model_dump())
         return EstimationResponseWithTime(**created_estimation.one())
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -62,7 +62,7 @@ def create_estimation(estimation: EstimationCreate):
 def delete_estimation(estimation_id: int = Path(..., gt=0)):
     try:
         result = mcube_estimation_service.delete(
-            'mcube_estimation', conditions={"id": estimation_id})
+            conditions={"id": estimation_id})
         if not result:
             raise HTTPException(status_code=404, detail="Estimation not found")
         return {"message": "Estimation deleted successfully"}
@@ -74,7 +74,7 @@ def delete_estimation(estimation_id: int = Path(..., gt=0)):
 def update_estimation(estimation_id: int, estimation: EstimationUpdate):
     try:
         updated_estimation = mcube_estimation_service.update(
-            'mcube_estimation', estimation.model_dump(exclude_unset=True), conditions={"id": estimation_id})
+            estimation.model_dump(exclude_unset=True), conditions={"id": estimation_id})
         if not updated_estimation:
             raise HTTPException(status_code=404, detail="Estimation not found")
         return EstimationResponseWithUpdateTime(**updated_estimation.one())
@@ -86,7 +86,7 @@ def update_estimation(estimation_id: int, estimation: EstimationUpdate):
 def get_submitted_estimations():
     try:
         estimations = mcube_estimation_service.read(
-            'mcube_estimation', conditions={"submitted": True})
+            conditions={"submitted": True})
         return [EstimationResponse(**estimation) for estimation in estimations.all()]
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

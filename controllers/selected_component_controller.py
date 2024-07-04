@@ -33,7 +33,7 @@ def get_selected_components(estimation_id: int):
     conditions = {"estimation_id": estimation_id}
     try:
         selected_components = selected_component_service.read_with_component_name(
-            table="selected_component", conditions=conditions)
+            conditions=conditions)
         if not selected_components:
             raise HTTPException(
                 status_code=404, detail="No selected components found for this estimation")
@@ -46,7 +46,7 @@ def get_selected_components(estimation_id: int):
 def create_selected_component(component: SelectedComponentCreate):
     try:
         created_component = selected_component_service.create(
-            table="selected_component", data=component.model_dump())
+            data=component.model_dump())
         if not created_component:
             raise HTTPException(
                 status_code=500, detail="Failed to create selected component")
@@ -62,7 +62,7 @@ def update_selected_component(id: int, component: SelectedComponentUpdate):
     conditions = {"id": id}
     try:
         updated_component = selected_component_service.update(
-            table="selected_component", conditions=conditions, data=component.model_dump(exclude_none=True))
+            conditions=conditions, data=component.model_dump(exclude_none=True))
         if not updated_component:
             raise HTTPException(
                 status_code=500, detail="Failed to update selected component")

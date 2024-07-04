@@ -23,7 +23,7 @@ class TargetReturn(BaseModel):
 def create_target(data: TargetCreate):
     try:
         created_target = target_service.create(
-            table="deployment_option", data=data.model_dump())
+            data=data.model_dump())
         if not created_target:
             raise HTTPException(
                 status_code=500, detail="Failed to create deployment_option")
@@ -37,7 +37,7 @@ def create_target(data: TargetCreate):
 @router.get("/", response_model=List[TargetReturn])
 def get_targets():
     try:
-        targets = target_service.read_all(table="deployment_option")
+        targets = target_service.read_all()
         return [TargetReturn(**target) for target in targets.fetchall()]
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -47,7 +47,7 @@ def get_targets():
 def delete_target(id: int):
     try:
         result = target_service.delete(
-            table="deployment_option", conditions={"id": id})
+            conditions={"id": id})
         if not result:
             raise HTTPException(status_code=404, detail="target not found")
         return {"message": "Deployment Option deleted successfully"}

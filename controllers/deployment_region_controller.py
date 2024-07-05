@@ -28,7 +28,7 @@ class RegionResponse(BaseModel):
 def add_region(data: RegionCreate):
     try:
         new_region = region_service.region_add(
-            table="deployment_region", data=data.model_dump())
+            data=data.model_dump())
         if not new_region:
             raise HTTPException(
                 status_code=500, detail="Failed to add new region")
@@ -43,7 +43,7 @@ def add_region(data: RegionCreate):
 def delete_region(id: int):
     try:
         del_region = region_service.region_delete(
-            table="deployment_region", conditions={"id": id})
+            conditions={"id": id})
         if not del_region:
             raise HTTPException(
                 status_code=500, detail="coudn't delete region")
@@ -57,7 +57,7 @@ def delete_region(id: int):
 @router.get("/regions/{deployment_option_id}", response_model=List[RegionResponse])
 def read_region(deployment_option_id: int):
     try:
-        reading_region = region_service.region_read(table="deployment_region", conditions={
+        reading_region = region_service.region_read(conditions={
             "deployment_option_id": deployment_option_id})
         if not reading_region:
             raise HTTPException(status_code=400, detail="coudn't read region")
@@ -72,7 +72,7 @@ def read_region(deployment_option_id: int):
 def update_region(id: int, data: RegionPatch):
     try:
         updated_region = region_service.region_update(
-            table="deployment_region", data=data.model_dump(), conditions={"id": id})
+            data=data.model_dump(), conditions={"id": id})
         if not updated_region:
             raise HTTPException(
                 status_code=400, detail="Coudn't update region")

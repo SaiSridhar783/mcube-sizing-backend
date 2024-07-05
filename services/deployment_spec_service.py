@@ -1,5 +1,5 @@
 from utils.db_connector import DBConnector
-
+from elasticsearch import ESClusterEstimator
 
 class DeploymentSpecService:
     def __init__(self, connector: DBConnector):
@@ -13,6 +13,9 @@ class DeploymentSpecService:
         query = f'INSERT INTO deployment_spec ({keys}) VALUES ({values})'
         self.connector.execute(query, data)
         return self.get_spec(size_slab_id, estimation_id)
+
+    #def suggest(self, estimation_id : int, component_id : int):
+        
 
     def get_spec(self, slab_id: int, estimation_id: int):
         query = """

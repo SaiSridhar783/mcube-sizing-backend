@@ -90,7 +90,7 @@ def delete_sizing_requirement(sizing_id: int):
     conditions = {"id": sizing_id}
     try:
         result = sizing_req_service.delete(
-            table="sizing_requirement", conditions=conditions)
+            conditions=conditions)
         if not result:
             raise HTTPException(404, "Sizing requirement not found")
         return {"message": f"Sizing requirement deleted successfully"}

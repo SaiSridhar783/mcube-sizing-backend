@@ -4,19 +4,20 @@ from utils.db_connector import DBConnector
 class SelectedComponentService:
     def __init__(self, connector: DBConnector):
         self.connector = connector
+        self.table = 'selected_component'
 
-    def create(self, table: str, data: dict):
+    def create(self, data: dict):
         keys = ', '.join(data.keys())
         values = ', '.join([f":{key}" for key in data.keys()])
-        query = f'INSERT INTO {table} ({keys}) VALUES ({values})'
+        query = f'INSERT INTO {self.table} ({keys}) VALUES ({values})'
         self.connector.execute(query, data)
         last_inserted_id = self.connector.execute(
             "SELECT LAST_INSERT_ID() AS id").first()["id"]
-        created = self.read(table, conditions={"id": last_inserted_id})
+        created = self.read(conditions={"id": last_inserted_id})
         return created
 
-    def read(self, table: str, columns='*', conditions: dict = None):
-        query = f'SELECT {columns} FROM {table}'
+    def read(self, columns='*', conditions: dict = None):
+        query = f'SELECT {columns} FROM {self.table}'
         params = {}
         if conditions:
             query += f' WHERE {" AND ".join([f"{k} = :{k}" for k in conditions.keys()])}'

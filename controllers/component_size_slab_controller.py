@@ -11,28 +11,32 @@ router = APIRouter()
 class MCubeSizeSlabCreate(BaseModel):
     component_id: int
     price_model_name: Literal["basic", "standard", "premium"]
-    storage_range: str
-    storage_gb: int
-    cpu_range: str
-    cpu_cores: int
-    memory_range: str
-    memory_gb: int
-    node_range: str
-    node_count: int
+    storage_range: str | None
+    storage_gb: int | None
+    cpu_range: str | None
+    cpu_cores: int | None
+    gpu_range: str | None
+    gpu_gb: int | None
+    memory_range: str | None
+    memory_gb: int | None
+    node_range: str | None
+    node_count: int | None
 
 
 class MCubeSizeSlabResponse(BaseModel):
     id: int
     component_id: int
     price_model_name: Literal["basic", "standard", "premium"]
-    storage_range: str
-    storage_gb: int
-    cpu_range: str
-    cpu_cores: int
-    memory_range: str
-    memory_gb: int
-    node_range: str
-    node_count: int
+    storage_range: str | None
+    storage_gb: int | None
+    cpu_range: str | None
+    cpu_cores: int | None
+    gpu_range: str | None
+    gpu_gb: int | None
+    memory_range: str | None
+    memory_gb: int | None
+    node_range: str | None
+    node_count: int | None
 
 
 @router.post("/", response_model=MCubeSizeSlabResponse)

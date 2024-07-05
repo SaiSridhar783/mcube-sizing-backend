@@ -1,39 +1,23 @@
 from fastapi import HTTPException, APIRouter
-from typing import Optional, List
-from services.sizing_requirement_service import SizingRequirementService
+from typing import Optional
 from pydantic import BaseModel
+from services.sizing_requirement_service import SizingRequirementService
 from utils.connectors import db_conn
 
 sizing_req_service = SizingRequirementService(db_conn)
 router = APIRouter()
 
 
-class SizingRequirementCreate(BaseModel):
-    data_vol_gb: int
-    tps_qps: int
-    concurrent_users: int
-    data_retention_period_months: int
-    max_job_count: int
-    max_report_count: int
-    ai_ml_model: int
-    high_availability: bool
-    deployment_type: int
-    deployment_region: int
-    provided_by: int
+class DeploymentOption(BaseModel):
+    id: int
+    target_name: str
+    target_type: str
 
 
-class SizingRequirementUpdate(BaseModel):
-    data_vol_gb: Optional[int] = None
-    tps_qps: Optional[int] = None
-    concurrent_users: Optional[int] = None
-    data_retention_period_months: Optional[int] = None
-    max_job_count: Optional[int] = None
-    max_report_count: Optional[int] = None
-    ai_ml_model: Optional[int] = None
-    high_availability: Optional[bool] = None
-    deployment_type: Optional[int] = None
-    deployment_region: Optional[int] = None
-    provided_by: Optional[int] = None
+class DeploymentRegion(BaseModel):
+    id: int
+    region_name: str
+    region_code: str
 
 
 class SizingRequirementResponse(BaseModel):
@@ -52,34 +36,49 @@ class SizingRequirementResponse(BaseModel):
     provided_by: int
 
 
-@router.get("/requirements/{estimation_id}", response_model=SizingRequirementResponse)
+class SizingRequirementDetailResponse(BaseModel):
+    sizing_requirement: SizingRequirementResponse
+    deployment_option: DeploymentOption
+    deployment_region: DeploymentRegion
+
+
+class SizingRequirementUpdate(BaseModel):
+    data_vol_gb: int
+    tps_qps: int
+    concurrent_users: int
+    data_retention_period_months: int
+    max_job_count: int
+    max_report_count: int
+    ai_ml_model: int
+    high_availability: bool
+    deployment_type: int
+    deployment_region: int
+    provided_by: int
+
+
+@router.get("/requirements/{estimation_id}", response_model=SizingRequirementDetailResponse)
 def get_sizing_requirements(estimation_id: int):
-    conditions = {"estimation_id": estimation_id}
     try:
-        sizing_params = sizing_req_service.read(
-            table="sizing_requirement", conditions=conditions)
-        sizing_params_ = sizing_params.fetchone()
-        if sizing_params_ is None:
+        sizing_params = sizing_req_service.read_with_details(estimation_id)
+        if sizing_params is None:
             raise HTTPException(
                 status_code=404, detail="Sizing Requirements not found")
-        return SizingRequirementResponse(**sizing_params_)
+        return SizingRequirementDetailResponse(**sizing_params)
     except HTTPException as e:
         raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.put("/update-requirement/{estimation_id}", response_model=SizingRequirementResponse)
-def update_sizing_requirement(estimation_id: int, sizing: SizingRequirementUpdate):
-    conditions = {"estimation_id": estimation_id}
+@router.post("/save/{estimation_id}", response_model=SizingRequirementDetailResponse)
+def upsert_sizing_requirement(estimation_id: int, sizing: SizingRequirementUpdate):
     try:
-        updated_sizing = sizing_req_service.update(
-            table="sizing_requirement", data=sizing.model_dump(exclude_none=True), conditions=conditions)
-        updated_sizing_ = updated_sizing.fetchone()
-        if updated_sizing_ is None:
+        upserted_sizing = sizing_req_service.upsert(
+            estimation_id, sizing.model_dump())
+        if upserted_sizing is None:
             raise HTTPException(
-                status_code=404, detail="Sizing requirement not found")
-        return SizingRequirementResponse(**updated_sizing_)
+                status_code=500, detail="Failed to upsert sizing requirement")
+        return SizingRequirementDetailResponse(**upserted_sizing)
     except HTTPException as e:
         raise e
     except Exception as e:
@@ -95,20 +94,5 @@ def delete_sizing_requirement(sizing_id: int):
         if not result:
             raise HTTPException(404, "Sizing requirement not found")
         return {"message": f"Sizing requirement deleted successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@router.post("/save-requirements/{estimation_id}", response_model=SizingRequirementResponse)
-def create_sizing_requirement(sizing: SizingRequirementCreate, estimation_id: int):
-    try:
-        created_sizing = sizing_req_service.create(
-            table="sizing_requirement", data=sizing.model_dump(), condition_value=estimation_id)
-        created_sizing_ = created_sizing.fetchone()
-        if created_sizing_ is None:
-            raise HTTPException(500, "Failed to create sizing requirement")
-        return SizingRequirementResponse(**created_sizing_)
-    except HTTPException as e:
-        raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

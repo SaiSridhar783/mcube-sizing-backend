@@ -24,7 +24,7 @@ class UsersService:
 
     def read_with_role(self, user_id: int):
         query = f"""
-        SELECT u.user_id, u.name, u.email, r.name as role_name
+        SELECT u.user_id, u.name, u.email, r.name as role_name, u.phone
         FROM {self.table} u
         JOIN role r ON u.role_id = r.id
         WHERE u.user_id = :user_id

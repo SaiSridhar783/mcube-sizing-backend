@@ -11,7 +11,7 @@ router = APIRouter()
 
 class McubeComponentBase(BaseModel):
     mcube_ver: str
-    component_name: str
+    component_name: str | None
     component_ver: str
     component_category: str
 

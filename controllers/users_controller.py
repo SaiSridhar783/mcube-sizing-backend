@@ -14,6 +14,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     role_id: int
+    phone: Optional[int] = None
 
 
 class UserUpdate(BaseModel):
@@ -21,6 +22,7 @@ class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     password: Optional[str] = None
     role_id: Optional[int] = None
+    phone: Optional[int] = None
 
 
 class UserCreateResponse(BaseModel):
@@ -29,6 +31,7 @@ class UserCreateResponse(BaseModel):
     email: EmailStr
     created_on: datetime
     role_id: int
+    phone: int
 
 
 class UserRetrieveResponse(BaseModel):
@@ -36,6 +39,7 @@ class UserRetrieveResponse(BaseModel):
     name: str
     email: EmailStr
     role_name: str
+    phone: int
 
 
 class UserUpdateResponse(BaseModel):
@@ -44,6 +48,7 @@ class UserUpdateResponse(BaseModel):
     email: EmailStr
     updated_on: datetime
     role_id: int
+    phone: int
 
 
 class UserValidate(BaseModel):

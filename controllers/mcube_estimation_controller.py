@@ -82,6 +82,15 @@ def update_estimation(estimation_id: int, estimation: EstimationUpdate):
         raise HTTPException(status_code=400, detail=str(e))
 
 
+@router.get("/get-all-estimations", response_model=List[EstimationResponse])
+def get_all_estimations():
+    try:
+        estimations = mcube_estimation_service.read('mcube_estimation')
+        return [EstimationResponse(**estimation) for estimation in estimations.all()]
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 @router.get("/get-submitted-estimations", response_model=List[EstimationResponse])
 def get_submitted_estimations():
     try:

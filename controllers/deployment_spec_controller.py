@@ -18,14 +18,14 @@ class MCubeComponentResponse(BaseModel):
 
 class DeploymentSpecResponse(BaseModel):
     id: int
-    node_id: int | None
+    node_id: int 
     node_name: str
     node_type: str
     cpu: int
     memory: int
     storage: int
-    target_id: int | None
-    cost: float | None
+    target_id: int 
+    cost: float 
     mcube_component: MCubeComponentResponse
 
 
